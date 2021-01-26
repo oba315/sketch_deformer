@@ -43,6 +43,14 @@ class MyFace() :
     context_parts = "mouth"     # 現在操作している顔のパーツ
 
     param_list = [ 0, 0.12, 0.25, 0.38, 0.50, 0.65, 0.75, 0.85 ]
+
+    # エリアを上書き
+    lap_area = {}
+    lap_area["eye_r"] = 2
+    lap_area["eye_l"] = 2
+    lap_area["eyebrows_r"] = 2
+    lap_area["eyebrows_l"] = 2
+
     
     # カーブ情報
     projection_curve_name = "projectionCurve"

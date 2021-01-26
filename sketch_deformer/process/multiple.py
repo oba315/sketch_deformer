@@ -55,8 +55,10 @@ def lap(myface, area=8) :
     
     # パラメータは使い回し
     params = myface.param_list
+    area_in = area
 
     for partname in myface.parts_vertex :
+        
         curvename = myface.projection_curve_name + "_" + partname
         if pm.objExists(curvename) :
             cur = pm.PyNode(curvename)
@@ -67,6 +69,11 @@ def lap(myface, area=8) :
             pinID_comp, params_comp = tools.complete_pinIndenList(myface,pinID,params)
             curpos_comp = curvetool.getCurvePoint(cur,  params_comp, "curvature")
 
+            # --------- areaを上書き ---------------------
+            if partname in myface.lap_area :
+                area = myface.lap_area[partname]
+            else :
+                area = area_in
             # --------- ラプラシアンエディットを実行 -------
             limitLap.do_lap_limit(
                     myface,

@@ -60,6 +60,11 @@ def shape_initialization() :
     #print "count ", count
 
 
+def reset() :
+    shape_initialization()
+    tools.deltemp()
+    tools.deltemp("projectionCurve")
+    tools.deltemp("curveshow")
 
 
 def changeAlpha(alphy) :
@@ -378,13 +383,19 @@ with pm.window("sketch_deformer_ui", title="sketch_deformer_ui", width=300 ) as 
         with pm.frameLayout( label='basic operation', labelAlign='top',  cll = 1, cl = 0) :
         
             with pm.horizontalLayout(spacing = 10):
-                pm.button (label = "delete temporal object", c =lambda *args:tools.deltemp())
+                pm.button (label = "clean", c =lambda *args:tools.deltemp())
             
                 pm.button (
                         label  = "形状の初期化",
                         c      = lambda *args: shape_initialization(),
                         h = 40
                     )
+
+                pm.button(
+                    label = "Reset",
+                    c = lambda *args : reset(),
+                    h = 40
+                )
 
         
 
@@ -394,7 +405,7 @@ with pm.window("sketch_deformer_ui", title="sketch_deformer_ui", width=300 ) as 
 
 
         with pm.frameLayout(label='スケッチの入力', labelAlign='top', cll = 1, cl = 0):
-            
+            pm.text( label='スケッチは時計周りに入力してください' , h = 15)
             with pm.horizontalLayout(spacing = 10):
                 pm.button (
                     label   = u"カーブを作成",
@@ -482,24 +493,7 @@ with pm.window("sketch_deformer_ui", title="sketch_deformer_ui", width=300 ) as 
                             
         # ----------------------------------------------------------------------------
         pm.separator(height=10, style ="double")
-
-        with pm.frameLayout( label='Sketch setting', labelAlign='top', borderVisible =1,cll = 1, cl = 1) :
-            pinModeBtn  = pm.radioButtonGrp(
-                                    nrb           = 2,
-                                    label         = "pin mode",
-                                    labelArray2   = ["normal","curvature"],
-                                    onCommand1    = "change_pin_mode('normal')",
-                                    onCommand2    = "change_pin_mode('curvature')"
-                                    )
-
-            # どの部分をスケッチとして与えるかを決める．
-            pinModeBtn  = pm.radioButtonGrp(
-                                    nrb           = 4,
-                                    label         = "sketch mode",
-                                    labelArray4   = ["mouth","eye_L","eye_R","nose" ],
-                                    onCommand1    = "myface.context_parts = 'mouth'",
-                                    onCommand2    = "myface.context_parts = 'eye_L'"
-                                    )
+        
             
         with pm.frameLayout( label='Pins', labelAlign='top', borderVisible =1,cll = 1, cl = 1) :
                         
