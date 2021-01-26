@@ -1,7 +1,7 @@
 # coding:shift-JIS
 # pylint: disable=F0401
 
-# 制限なしブレンドシェイプ
+# 複数スケッチを入力した際の変形
 
 import pymel.core as pm  
 import sys
@@ -23,7 +23,22 @@ from . import limitLap
 reload(limitLap)
 
 
-def do(myface) :
+def do_only_one_parts(myface, alpha,t0 = 0, t1 = 1) :
+
+    curPosall = curvetool.getCurvePoint(myface.curve, myface.param_list)
+    pinIDall  = myface.parts_vertex[myface.context_parts]
+
+    doDMP_constraint.do_dmp( myface,
+                        curPosall,
+                        pinIndex = pinIDall, 
+                        ap = True,
+                        alpha= alpha,
+                        t0=t0,
+                        t1=t1
+                        )
+
+
+def do(myface, alpha, t0 = 0, t1 = 1) :
 
     curPosall = []
     pinIDall  = []
@@ -32,7 +47,6 @@ def do(myface) :
     for partname in myface.parts_vertex :
         curvename = myface.projection_curve_name + "_" + partname
         if pm.objExists(curvename) :
-            print "aaaaaaaaaaaaaa", curvename
             cur = pm.PyNode(curvename)
             # パラメータは使いまわし
             curPosall  += curvetool.getCurvePoint(cur, myface.param_list)
@@ -42,7 +56,9 @@ def do(myface) :
                         curPosall,
                         pinIndex = pinIDall, 
                         ap = True,
-                        alpha= 0.5,
+                        alpha= alpha,
+                        t0=t0,
+                        t1=t1
                         )
 
 def lap(myface, area=8) :

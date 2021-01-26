@@ -35,7 +35,7 @@ reload(multiple)
 
 
 def donothing(*args) :
-    print "pussed"
+    print "pushed"
 
 
 def shape_initialization() :
@@ -67,21 +67,12 @@ def reset() :
     tools.deltemp("curveshow")
 
 
-def changeAlpha(alphy) :
-    myface.alpha = alphy
-    doDMP.do_dmp_with_my_face(myface,curvetool.curPosList)
-    
-
 def changeBlender(str) :
     global blender
     blender       = pm.PyNode(str)
+    myface.blender = pm.PyNode(str)
+    myface.blender_name = str
 
-
-def change_pin_mode(str) :
-    global pinMode
-    pinMode          = str
-    print "pinMode :", pinMode
-    
 
 def changeBase(str) :
     global base
@@ -89,6 +80,8 @@ def changeBase(str) :
     try :
         base         = pm.PyNode(str)
         base_name    = str
+        myface.name = str
+        myface.obj = pm.PyNode(str)
     except :
         print "オブジェクト",str,"が存在しません"
     
@@ -101,50 +94,26 @@ def changeRef(str) :
         print "オブジェクト",str,"が存在しません"
         
         
+# カーブ描画の開始        
 def startTool(ctx) :
     [ pm.setAttr(w,0.0) for w in blender.w ]
     pm.setToolTo(ctx)
     tools.deltemp()
-    
-    
-def change_curve_mode(str):
-    global curveMode
-    curveMode    = str
-    print "curve_mode :",curveMode
+   
+
+
+# - - - - - -  ピンの修正 - - - - - - - - - - - - - - 
+def edit_pin2() :
+    pinEditor = pinedit2.PinEditor(myface)
+
     
 
-def pin_editor() :
-    print "### PIN EDIT MODE ###"
-    global base
-    baseObj = pm.PyNode(base)
-    pm.select(baseObj)
-    
-    pm.mel.doMenuComponentSelectionExt("base", "vertex", 1)
-    pm.setToolTo("selectSuperContext")
-    
-    global subPinIndexList
-    [pm.select(baseObj.vtx[i], add=1) for i in subPinIndexList] 
-    
-def sub_pin_editor_add() :
-    if pm.currentCtx() != "selectSuperContext" :
-        print ("ERROR")
-        return -1
-    global subPinIndexList
-    slls = pm.ls(sl=1, fl=1)
-    [subPinIndexList.append(v.index()) for v in slls] 
-    
-def sub_pin_editor_initialization() :
-    global subPinIndexList
-    subPinIndexList = []
-    
-    
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
 def changeLamda(lamdy) :
-    global lamda
-    lamda = lamdy
-    dict = {}
-    
     myface.lamda = lamdy
-    
+  
 
 # 現在の形状をブレンドシェイプとして保存
 def save_as_BS() :
@@ -175,106 +144,8 @@ def save_as_BS() :
     pm.delete(base_dup)
     print "[time]  ", time.time() - start
     
-    
-def edit_pin() :
-    cur = pm.PyNode("projectionCurve")
-    global pinEditor
-    
-    pinEditor = pinedit.PinEditor(
-                            cur,
-                            base,
-                            myface,
-                            pinIndexList, 
-                            paramList,
-                            prePos,
-                            blender,
-                            alpha)
-    
-def edit_pin2() :
-    pinEditor = pinedit2.PinEditor(myface)
 
-def finish_edit_pin() :
-    global pinEditor    
-    global pinIndexList
-    pinIndexList = pinEditor.get_pinIndexList()
-    global paramList
-    paramList = pinEditor.get_paramList()
-    # paramList を用いて、curvetool.curPosList　を更新
-    curvetool.curPosList = curvetool.getCurvePoint(pm.PyNode("projectionCurve"),paramList,"normal")
-    if pm.window('pinEditUI', ex=1) == True:
-        	pm.deleteUI('pinEditUI')
-    
-    print "aaaaaaa"
-
-    # prePosを更新
-    #shape_initialization()
-    global prePos
-    #prePos   = [ pm.pointPosition(base.vtx[i]) for i in pinIndexList ]
-    prePos  = [ myface.defaultShape[i] for i in pinIndexList ]
-
-    tools.deltemp()
-    
-
-def make_pin_list(
-            fix = (-1,-1)
-            ) :
-    global pinIndexList
-    global paramList
-    
-    pinIndexList = []
-    paramList    = [0.0]
-    
-    slls = pm.ls(sl = 1, fl = 1)
-    if type(slls[0]) != pm.general.MeshVertex :
-        print "ERROR"
-        return -1
-        
-    edgeLengthList = []
-    sumLength = 0
-    buffer  = 0
-    for i,v in enumerate(slls) :
-        pinIndexList.append( v.index() )
-        pos = pm.pointPosition(v)
-        if i != 0 :
-            dist = (pos - buffer).length()
-            sumLength += dist
-            edgeLengthList.append( sumLength )
-            
-        buffer = pos
-        
-    
-    for p in edgeLengthList :
-        paramList.append( p / sumLength )
-    
-    if fix[0] != -1 :
-        print "unfixed  = ",paramList
-        id = 0
-        idList = []
-        param_befor = 0
-        for i, p in enumerate(pinIndexList) :
-            
-            if id == 0 :
-                param_befor = paramList[i]
-            if p == fix[0]:
-                id = 1
-            
-            idList.append(id)
-            
-        for i,p in enumerate(pinIndexList) :
-            if idList[i] == 0 :
-                paramList[i] = paramList[i] * fix[1] / param_befor
-            else :
-                if param_befor != 1 :
-                    k = (fix[1] - 1) / (param_befor - 1)
-                    paramList[i] = k * paramList[i] + (1 - k)            
-        
-    if len(pinIndexList) != len(paramList) :
-        print "ERROR"
-        return -1
-    print "pinIndex = ",pinIndexList
-    print "param    = ",paramList
-
-
+# - - - - - -  変形するパーツを指定 - - - - - - - - - - - - - - 
 class my_toggle_button(object):
     ot = []
     def __init__(self, label, command):
@@ -296,14 +167,9 @@ class my_toggle_button(object):
 
     def set_bg_acctive(self):
         self.b.setBackgroundColor(self.active_col)
-    
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-# - - - G L O B A L - - - -
-global alpha
-alpha           = 0.1
-global pinMode 
-pinMode            = "curvature"
-
+# - - - - - - - -  存在確認 - - - - - - - - - - - - - - - - -
 if pm.objExists("base") == True :
     global base_name
     base_name        = "base"
@@ -326,36 +192,10 @@ if pm.objExists("blendShape1") == True :
 else :
     print u"ERROR : 名前'blendShape1'を持つオブジェクトが存在しません"
 
-global lamda
-lamda           = 1.0
-global curveMode
-curveMode       = "mouth"
-
-sub_pin_editor_initialization()
-
-paramList       = [ 0, 0.12, 0.25, 0.38, 0.50, 0.65, 0.75, 0.85 ]
-pinIndexList     = [ 3654,  4037, 3658, 3212, 2862, 2846, 4042, 3638 ]
 
 
 global ctx
 ctx             = "makeCurveToolCtx"    # 同じ名前のコンテクストが存在するとランタイムエラーが起きる
-
-num_of_vtx = len(base.vtx)
-"""
-for i in pinIndexList :
-    if num_of_vtx < i :
-        print u"ERROR  ピンの頂点インデックスが全体の頂点数を超えています"
-        sys.exit()
-"""
-
-
-# 初期状態を保存
-#global defaultShape         # 頂点すべての位置 
-global prePos               # ピンの頂点の位置
-[ pm.setAttr(w,0.0) for w in blender.w ]
-baseObj = pm.PyNode(base) 
-#defaultShape = [ pm.pointPosition(v) for v in baseObj.vtx ]
-prePos        = [ pm.pointPosition(base.vtx[i]) for i in pinIndexList ]
 
 
 ##############################
@@ -363,7 +203,13 @@ myface = my_face.MyFace()
 ##############################
 
 
-# - - - - - - - - - - - - - -
+# - - - - - - - -  初期状態を保存 - - - - - - - - - - - - - - - - -
+#global defaultShape         # 頂点すべての位置 
+[ pm.setAttr(w,0.0) for w in blender.w ]
+baseObj = pm.PyNode(base) 
+#defaultShape = [ pm.pointPosition(v) for v in baseObj.vtx ]
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 #windowが開かれていたら更新する
 if pm.window('sketch_deformer_ui', ex=1) == True:
@@ -398,14 +244,12 @@ with pm.window("sketch_deformer_ui", title="sketch_deformer_ui", width=300 ) as 
                 )
 
         
-
-        
         # ----------------------------------------------------------------------------
         pm.separator(height=20, style ="double")
 
 
         with pm.frameLayout(label='スケッチの入力', labelAlign='top', cll = 1, cl = 0):
-            pm.text( label='スケッチは時計周りに入力してください' , h = 15)
+            pm.text( label='スケッチは所定の向きに入力してください' , h = 15)
             with pm.horizontalLayout(spacing = 10):
                 pm.button (
                     label   = u"カーブを作成",
@@ -430,7 +274,7 @@ with pm.window("sketch_deformer_ui", title="sketch_deformer_ui", width=300 ) as 
                                         pm.PyNode(
                                             pm.textFieldGrp(saved_curve, q=1, text = 1)
                                             ),
-                                        paramList,
+                                        myface.param_list,
                                         myface
                                     )
                 )
@@ -495,46 +339,7 @@ with pm.window("sketch_deformer_ui", title="sketch_deformer_ui", width=300 ) as 
         pm.separator(height=10, style ="double")
         
             
-        with pm.frameLayout( label='Pins', labelAlign='top', borderVisible =1,cll = 1, cl = 1) :
-                        
-            pm.text( label='Pin index list' )                        
-            pm.scrollField(                         
-                                    text          = str(pinIndexList),
-                                    bgc           = [0.3,0.3,0.3],
-                                    h             = 20,
-                                    editable      = 0
-                                    )
-            pm.text( label='Pin parameter list' )
-            pm.scrollField(   
-                                    text          = str(paramList),
-                                    bgc           = [0.3,0.3,0.3],
-                                    h             = 20,
-                                    editable      = 0
-                                    )
-            pm.button (
-                label  = "Edit sub_Pin",
-                c      = lambda *args: pin_editor(),
-                )
-                
-            pm.button (
-                label  = "Add sub_Pin",
-                c      = lambda *args: sub_pin_editor_add(),
-                )
-            pm.button (
-                label  = "Del sub_Pin",
-                c      = lambda *args: sub_pin_editor_initialization(),
-                )
-                                    
-            pm.button (
-                    label  = u"Edit corresponding point",
-                    c      = lambda *args: edit_pin(),
-                    h = 20
-                )
-            pm.button (
-                    label  = u"Finish",
-                    c      = lambda *args: finish_edit_pin(),
-                    h = 20
-                )
+        
         # ----------------------------------------------------------------------------
         pm.separator(height=10, style ="double")
 
@@ -551,8 +356,8 @@ with pm.window("sketch_deformer_ui", title="sketch_deformer_ui", width=300 ) as 
                                     fieldMaxValue = 10.00,
                                     value         = 0.10,
                                     pre           = 2,        # 小数点以下の桁数を指定
-                                    changeCommand = lambda value:changeAlpha(value),
-                                    dragCommand   = lambda value:changeAlpha(value)
+                                    #changeCommand = lambda value:changeAlpha(value),
+                                    #dragCommand   = lambda value:changeAlpha(value)
                                     # dragCommandでスライド中も実行するようにできる 
                                     )
 
@@ -591,21 +396,22 @@ with pm.window("sketch_deformer_ui", title="sketch_deformer_ui", width=300 ) as 
                     )
                 """
                 pm.button (
-                        label  = u"一部のみ変形",
-                        c      = lambda *args: doDMP_constraint.do_dmp( 
-                                                            myface,
-                                                            curvetool.curPosList,
-                                                            pm.floatSliderGrp(alphaButton, q = 1, v = 1),
-                                                            pm.floatSliderGrp(lower_limit, q = 1, v = 1),
-                                                            pm.floatSliderGrp(upper_limit, q = 1, v = 1)  ),
-                        h      = 40,
-                        bgc    = [0.3, 0.17, 0.04]
+                    label   = u"一部のみ変形",
+                    c       = lambda *args: multiple.do_only_one_parts( 
+                                                    myface,
+                                                    pm.floatSliderGrp(alphaButton, q = 1, v = 1),
+                                                    pm.floatSliderGrp(lower_limit, q = 1, v = 1),
+                                                    pm.floatSliderGrp(upper_limit, q = 1, v = 1)  ),
+                    h       = 40,
+                    bgc     = [0.3, 0.17, 0.04]
                     )
 
                 pm.button (label = u"全体を変形",
-                    c = lambda *args: multiple.do(myface),
-                    h      = 40,
-                        bgc    = [0.3, 0.17, 0.04]
+                    c       = lambda *args: multiple.do(myface,   pm.floatSliderGrp(alphaButton, q = 1, v = 1),
+                                                            pm.floatSliderGrp(lower_limit, q = 1, v = 1),
+                                                            pm.floatSliderGrp(upper_limit, q = 1, v = 1)  ),
+                    h       = 40,
+                    bgc     = [0.3, 0.17, 0.04]
                     )
         
                                 
@@ -721,7 +527,7 @@ with pm.window("sketch_deformer_ui", title="sketch_deformer_ui", width=300 ) as 
         
             
         
-curvetool.make_curve_tool(ref,myface, pinIndexList, paramList, pinMode)
+curvetool.make_curve_tool(ref,myface, "curvature")
 pm.showWindow( sketch_deformer_ui )
 
 

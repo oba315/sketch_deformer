@@ -226,7 +226,7 @@ def dragCmd(ref) :
     
 
 # マウスを離したときのコマンド
-def ReleaseCmd(myface, pinIndexList, paramList, pinMode, leave_curve = False) :
+def ReleaseCmd(myface, pinMode, leave_curve = False) :
 
     
     # - - - - - カーブを作成 - - - - - - - - - - - - - - - 
@@ -252,10 +252,7 @@ def ReleaseCmd(myface, pinIndexList, paramList, pinMode, leave_curve = False) :
         pm.curve(p = cv, n=curvename)
         cur = pm.PyNode(curvename) 
     
-    global curPosList
-    curPosList    = getCurvePoint(cur,paramList) # 位置 (MayaAPI)
-    print "*curPosLsit (",len(curPosList),") :", curPosList
-
+    
 
     # それぞれのパーツごとにカーブを保存
     # multiple.py で使用
@@ -384,7 +381,7 @@ def getCurvePoint(cur, paramList, pinModes = 0, debug = True) :
 # - - - MAIN - - - - -
 #     ツールの作成
 # - - - - - - - - - -  
-def make_curve_tool(ref,myface, pinIndexList, paramList, pinMode ) :
+def make_curve_tool(ref,myface, pinMode ) :
     
      
     if cmds.draggerContext(ctx, exists=True):
@@ -395,7 +392,7 @@ def make_curve_tool(ref,myface, pinIndexList, paramList, pinMode ) :
             prePressCommand     =  lambda *args : prePressCmd(), 
             pressCommand        =  lambda *args : SampleContextPress(), 
             dragCommand         =  lambda *args : dragCmd(ref), 
-            releaseCommand      =  lambda *args : ReleaseCmd(myface, pinIndexList, paramList, pinMode), 
+            releaseCommand      =  lambda *args : ReleaseCmd(myface, pinMode), 
             cursor              =  'hand',
             space               =  "world"
             );                """ これらの関数の中の変数はグローバルに宣言されていないと使えない？？"""

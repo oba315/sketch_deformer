@@ -17,6 +17,43 @@ reload (my_face)
 from ..process import doDMP_constraint
 reload (doDMP_constraint)
           
+
+
+def edit_pin(base,myface,prePos,blender) :
+    cur = pm.PyNode("projectionCurve")
+    global pinEditor
+    
+    pinEditor = PinEditor(
+                        cur,
+                        base,
+                        myface,
+                        myface.pinIndexList, 
+                        myface.paramList,
+                        prePos,
+                        blender,
+                        0.1)
+    
+
+def finish_edit_pin(myface) :
+    global pinEditor    
+    global pinIndexList
+    pinIndexList = pinEditor.get_pinIndexList()
+    global paramList
+    paramList = pinEditor.get_paramList()
+    # paramList を用いて、curvetool.curPosList　を更新
+    curvetool.curPosList = curvetool.getCurvePoint(pm.PyNode("projectionCurve"),paramList,"normal")
+    if pm.window('pinEditUI', ex=1) == True:
+        	pm.deleteUI('pinEditUI')
+    
+    print "aaaaaaa"
+
+    # prePosを更新
+    #shape_initialization()
+    global prePos
+    #prePos   = [ pm.pointPosition(base.vtx[i]) for i in pinIndexList ]
+    prePos  = [ myface.defaultShape[i] for i in pinIndexList ]
+
+    tools.deltemp()
             
 class PinEditor() :
     
