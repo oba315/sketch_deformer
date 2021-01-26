@@ -1,6 +1,6 @@
 print (u"install my module")
 import sys
-sys.path.append("C:/Work/Sketch/sketch_deformer")
+sys.path.append("C:/Work/Sketch/sketch_deformer_m")
 
-import sketch_deformer
-reload (sketch_deformer)    
+import script
+reload (script)    
