@@ -5,6 +5,8 @@
 https://drive.google.com/file/d/1xo9MyAmCvqL5ixvSWVuIPuOBSLl4fRF9/view?usp=sharing
 
 ## Install
+本スクリプトはMaya2019での動作を確認しています．
+
 sketch_deformer内sample_scene.mbを開きます．
 
 installer.pyの中の内容をスクリプトエディタのPythonタブにコピーします．
@@ -45,5 +47,4 @@ module_pathの値をsketch_deformer_scriptのあるディレクトリに変更�
 
 
 ## Contribution
-
-## Licence
+サンプルファイルおよびREADME内の３DモデルはVincent For Blender 2.8x Eevee and Cycles Render https://cloud.blender.org/p/characters/5718a967c379cf04929a4247 を使用しています．
