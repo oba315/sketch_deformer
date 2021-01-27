@@ -7,10 +7,10 @@ https://drive.google.com/file/d/1xo9MyAmCvqL5ixvSWVuIPuOBSLl4fRF9/view?usp=shari
 ## Install
 sketch_deformer内sample_scene.mbを開きます．
 
-installer.pyの中の内容をスクリプトエディタにコピーします．
+installer.pyの中の内容をスクリプトエディタのPythonタブにコピーします．
 ![](https://i.imgur.com/bB7ec3w.png)
 
-module_pathnoの値をsketch_deformer_scriptのあるディレクトリに変更します．
+module_pathの値をsketch_deformer_scriptのあるディレクトリに変更します．
 
 スクリプトエディタの内容を実行し，少し待つとUIが表示されます．
 
