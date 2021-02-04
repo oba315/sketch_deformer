@@ -25,8 +25,8 @@ from .tool import pinset
 reload (pinset)
 from .tool import my_face
 reload(my_face)
-from .search import optimize
-reload(optimize)
+#from .search import optimize
+#reload(optimize)
 from .tool import pinedit2
 reload (pinedit2)
 from .process import multiple
