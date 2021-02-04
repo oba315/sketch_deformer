@@ -5,14 +5,12 @@
 https://drive.google.com/file/d/1xo9MyAmCvqL5ixvSWVuIPuOBSLl4fRF9/view?usp=sharing
 
 ## Install
-本スクリプトはMaya2019での動作を確認しています．
+本スクリプトはWindows/Maya2019での動作を確認しています．
 
 sketch_deformer内sample_scene.mbを開きます．
 
 installer.pyの中の内容をスクリプトエディタのPythonタブにコピーします．
-![](https://i.imgur.com/bB7ec3w.png)
-
-module_pathの値をsketch_deformer_scriptのあるディレクトリに変更します．
+![](https://i.imgur.com/pjEIKbS.png)
 
 スクリプトエディタの内容を実行し，少し待つとUIが表示されます．
 
