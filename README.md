@@ -8,10 +8,9 @@ https://drive.google.com/file/d/1xo9MyAmCvqL5ixvSWVuIPuOBSLl4fRF9/view?usp=shari
 本スクリプトはWindows/Maya2019での動作を確認しています．
 
 追記202/2/12
-
   Maya2020で動作させるためにはinstaller.pyに記載の修正を行う必要があります。
 
-sketch_deformer内sample_scene.mbを開きます．
+**sketch_deformer内sample_scene.mbを開きます．**
 
 installer.pyの中の内容をスクリプトエディタのPythonタブにコピーします．
 ![](https://i.imgur.com/pjEIKbS.png)
