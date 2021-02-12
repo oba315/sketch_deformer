@@ -15,4 +15,11 @@ reload (sketch_deformer_script)
 # 
 # また、既にnumpyがインストール済みのMayaではうまく使用できない場合があります。
 
-
+# 2020/2/12
+# Maya2020をお使いの方へ
+# 通常の方法ではスケッチの入力時にエラーが起きてしまいます。
+# 以下の修正が必要です
+# sketch_deformer_script/tool/tools.py 374行目
+# mitMeshPolygonIns.next(1)              
+#   ↓
+# mitMeshPolygonIns.next()
