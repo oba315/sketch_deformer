@@ -370,8 +370,11 @@ def laytomesh(
                 #makeVector(faceNormal)                
         #--------------------------
         # なぜかポリゴンの場合だけnextに引数が必要…？ドキュメントに書いてないので多分バグ
-        # Maya2020の場合は下の行の引数を無しにしてください　mitMeshPolygonIns.next()
-        mitMeshPolygonIns.next(1)              
+        # Maya2020の場合は引数を無しに　mitMeshPolygonIns.next()
+        try :
+            mitMeshPolygonIns.next(1)   # Maya2019
+        except :
+            mitMeshPolygonIns.next()   # Maya2020
 
     if (length != 0) :
         print u"cv is       = ", returnPoint
